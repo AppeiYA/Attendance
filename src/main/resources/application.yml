@@ -1,0 +1,25 @@
+server:
+    port: 8081
+spring:
+    application:
+        name: Attendance
+    datasource:
+        url: jdbc:postgresql://localhost:5432/studentattendance
+        username: postgres
+        password: Appei2004
+        driver-class-name: org.postgresql.Driver
+    jpa:
+        hibernate:
+            ddl-auto: none
+        show-sql: true
+        properties:
+            hibernate:
+                format-sql: true
+        database: postgresql
+        database-platform: org.hibernate.dialect.PostgreSQLDialect
+    flyway:
+        enabled: true
+        url: jdbc:postgresql://localhost:5432/studentattendance
+        user: postgres
+        password: Appei2004
+        locations: classpath:db/migration
