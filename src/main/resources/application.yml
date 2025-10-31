@@ -1,5 +1,12 @@
 server:
     port: 8081
+
+app:
+    name: Student Attendance System
+    version: 1.0.0
+    jwt:
+        secret: mySuperSecretKey1234567890mySuperSecretKey
+        expiration: 3600000
 spring:
     application:
         name: Attendance

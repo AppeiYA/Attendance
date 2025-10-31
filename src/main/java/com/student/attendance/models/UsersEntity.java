@@ -7,6 +7,7 @@ import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import jakarta.persistence.*;
 
@@ -38,7 +39,7 @@ public class UsersEntity {
 
 	@ManyToOne
 	@JoinColumn(name="department_id")
-	@JsonBackReference
+	@JsonIgnoreProperties({"users"})
 	private DepartmentEntity department;
 	
 	@OneToMany(mappedBy = "student", cascade = CascadeType.ALL, fetch = FetchType.LAZY)

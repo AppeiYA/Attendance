@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.*;
@@ -24,7 +25,7 @@ public class DepartmentEntity {
 	
 	@ManyToOne
 	@JoinColumn(name="faculty_id")
-	@JsonBackReference
+	@JsonIgnoreProperties({"departments"})
 	private FacultyEntity faculty;
 	
 	@OneToMany(

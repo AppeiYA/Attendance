@@ -15,6 +15,7 @@ public class FacultyEntity {
 	@GeneratedValue(strategy=GenerationType.UUID)
 	private UUID id;
 	
+
 	@Column(nullable=false, length=255)
 	private String name;
 	
@@ -25,6 +26,9 @@ public class FacultyEntity {
 			)
 	@JsonManagedReference
 	private List<DepartmentEntity> departments;
+	
+	public FacultyEntity() {
+	} 
 	
 	public FacultyEntity(String name) {
 		this.name = name;

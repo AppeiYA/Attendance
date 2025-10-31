@@ -8,4 +8,6 @@ import com.student.attendance.models.UsersEntity;
 
 public interface UserRepository extends JpaRepository<UsersEntity, UUID> {
 
+	UsersEntity findUserByEmail(String email) ;
+	UsersEntity findUserById(UUID id);
 }

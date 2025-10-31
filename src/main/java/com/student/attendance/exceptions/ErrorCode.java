@@ -9,7 +9,11 @@ public enum ErrorCode {
 	HTTP_MEDIA_TYPE_NOT_ACCEPTABLE("PACKT-0004", "Requested 'Accept' header value is not supported. Please use" +
 	"application/json or application/xml as 'Accept' value"),
 	JSON_PARSE_ERROR("PACKT-0005", "Make sure request payload should be a valid JSON object."),
-	HTTP_MESSAGE_NOT_READABLE("PACKT-0006", "Make sure request payload should be a valid JSON or XML object according to 'Content-Type'.");
+	HTTP_MESSAGE_NOT_READABLE("PACKT-0006", "Make sure request payload should be a valid JSON or XML object according to 'Content-Type'."),
+	DATABASE_ERROR("PACKT-0007", "A database error occured while processing your request"),
+	INVALID_INPUT_ERROR("PACT-0007", "Invalid input from user"),
+	UNAUTHORIZED_USER("PACT-0009", "Unauthorized user"),
+	AUTHENTICATION_ERROR("PACT-0008", "Authentication error");
 	
 	
 	private String errCode;
