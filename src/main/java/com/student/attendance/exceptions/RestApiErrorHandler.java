@@ -28,6 +28,17 @@ public class RestApiErrorHandler {
 		this.messageSource = messageSource;
 	}
 	
+	@ExceptionHandler(NotFoundError.class)
+	public ResponseEntity<Error> handleNotFoundError(HttpServletRequest request, NotFoundError ex,
+			Locale locale){
+		Error error = ErrorUtils.createError(ex.getMessage(), ErrorCode.NOT_FOUND.getErrCode(), HttpStatus.NOT_FOUND.value())
+				.setUrl(request.getRequestURL().toString())
+				.setReqMethod(request.getMethod());
+		log.error("NotFoundError at {} {}: {} ", request.getMethod(), request.getRequestURL(), ex.getMessage());
+		
+		return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+	}
+	
 	@ExceptionHandler(UnauthorizedUserException.class)
 	public ResponseEntity<Error> handleUnauthorizedUserException(HttpServletRequest request, UnauthorizedUserException ex,
 			Locale locale){

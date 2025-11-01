@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import com.student.attendance.dtos.UserDto;
 import com.student.attendance.dtos.VerifiedUserDto;
+import com.student.attendance.exceptions.NotFoundError;
 import com.student.attendance.exceptions.UnauthorizedUserException;
 import com.student.attendance.models.UsersEntity;
 //import com.student.attendance.dtos.UserRegisterDto;
@@ -39,7 +40,6 @@ public class UserService {
 	}
 	
 	public UserDto getUserByEmail(String email) {
-		log.error(email);
 		VerifiedUserDto tokenUser = (VerifiedUserDto) SecurityContextHolder
 				.getContext()
 				.getAuthentication()
@@ -49,7 +49,7 @@ public class UserService {
 		}
 		UsersEntity user = this.userRepository.findUserByEmail(email);
 		if(user == null) {
-			throw new IllegalArgumentException("User not exists");
+			throw new NotFoundError("User not found");
 		}
 		UserDto responseUser = this.usersMapper.toUser(user);
 		return responseUser;

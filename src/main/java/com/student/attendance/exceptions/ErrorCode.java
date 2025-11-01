@@ -13,7 +13,8 @@ public enum ErrorCode {
 	DATABASE_ERROR("PACKT-0007", "A database error occured while processing your request"),
 	INVALID_INPUT_ERROR("PACT-0007", "Invalid input from user"),
 	UNAUTHORIZED_USER("PACT-0009", "Unauthorized user"),
-	AUTHENTICATION_ERROR("PACT-0008", "Authentication error");
+	AUTHENTICATION_ERROR("PACT-0008", "Authentication error"),
+	NOT_FOUND("PACT-0010", "Item not found");
 	
 	
 	private String errCode;
