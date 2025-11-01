@@ -30,6 +30,9 @@ public class CoursesEntity {
 	
 	@Column(nullable=false)
 	private boolean can_enroll;
+	
+	public CoursesEntity() {
+	}
 
 	public CoursesEntity(UsersEntity instructor, String name, int units, int semester, boolean can_enroll) {
 		this.instructor = instructor;
