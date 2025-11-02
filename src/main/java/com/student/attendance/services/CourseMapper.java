@@ -4,6 +4,7 @@ import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 
+import com.student.attendance.dtos.CourseDto;
 import com.student.attendance.dtos.CreateCourseDto;
 import com.student.attendance.models.CoursesEntity;
 import com.student.attendance.models.UsersEntity;
@@ -23,5 +24,14 @@ public class CourseMapper {
 		course.setInstructor(instructor);
 		
 		return course;
+	}
+	
+	public CourseDto toCourseDto(CoursesEntity course) {
+		return new CourseDto(course.getId(), 
+				course.getName(), 
+				course.getUnits(), 
+				course.getSemester()
+				);
+		
 	}
 }

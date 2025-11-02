@@ -14,7 +14,8 @@ public enum ErrorCode {
 	INVALID_INPUT_ERROR("PACT-0007", "Invalid input from user"),
 	UNAUTHORIZED_USER("PACT-0009", "Unauthorized user"),
 	AUTHENTICATION_ERROR("PACT-0008", "Authentication error"),
-	NOT_FOUND("PACT-0010", "Item not found");
+	NOT_FOUND("PACT-0010", "Item not found"),
+	ILLEGAL_STATE("PACT-0011", "IllegalStateException");
 	
 	
 	private String errCode;

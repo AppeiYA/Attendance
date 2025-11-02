@@ -28,6 +28,17 @@ public class RestApiErrorHandler {
 		this.messageSource = messageSource;
 	}
 	
+	@ExceptionHandler(IllegalStateException.class)
+	public ResponseEntity<Error> handleIllegalStateException(HttpServletRequest request, IllegalStateException ex,
+			Locale locale){
+		Error error = ErrorUtils.createError(ex.getMessage(), ErrorCode.ILLEGAL_STATE.getErrCode(), HttpStatus.EXPECTATION_FAILED.value())
+				.setUrl(request.getRequestURL().toString())
+				.setReqMethod(request.getMethod());
+		log.error("IllegalStateException at {} {}: {} ", request.getMethod(), request.getRequestURL(), ex.getMessage());
+		
+		return new ResponseEntity<>(error, HttpStatus.EXPECTATION_FAILED);
+	}
+	
 	@ExceptionHandler(NotFoundError.class)
 	public ResponseEntity<Error> handleNotFoundError(HttpServletRequest request, NotFoundError ex,
 			Locale locale){

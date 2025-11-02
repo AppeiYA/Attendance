@@ -1,6 +1,7 @@
 package com.student.attendance.controllers;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -13,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 //import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import com.student.attendance.dtos.CourseDto;
 import com.student.attendance.dtos.CreateCourseDto;
 import com.student.attendance.dtos.UserDto;
 import com.student.attendance.services.UserService;
@@ -79,4 +81,39 @@ public class UserController {
 		
 		return ResponseEntity.status(HttpStatus.OK).body(res);
 	}
+	
+	@GetMapping("/api/users/courses")
+	public ResponseEntity<Map<String, Object>> getCourses(){
+		List<CourseDto> courses = this.userService.getCourses();
+		
+		Map<String, Object> res = new HashMap<>();
+		res.put("message", "Success");
+		res.put("data", courses);
+		
+		return ResponseEntity.status(HttpStatus.OK).body(res);
+	}
+	
+	@GetMapping("/api/users/courses/{courseId}")
+	public ResponseEntity<Map<String, Object>> getCourseById(@PathVariable UUID courseId){
+		CourseDto course = this.userService.getCourseById(courseId);
+		
+		Map<String, Object> res = new HashMap<>();
+		res.put("message", "Success");
+		res.put("data", course);
+		
+		return ResponseEntity.status(HttpStatus.OK).body(res);
+	}
+	
+	@PostMapping("/api/users/courses/{courseId}/enroll")
+	public ResponseEntity<Map<String, Object>> enrollForCourse(@PathVariable UUID courseId){
+		this.userService.enrollForCourse(courseId);
+		
+		Map<String, Object> res = new HashMap<>();
+		res.put("message", "Enrolled successfully");
+		res.put("StatusCode", HttpStatus.OK.value());
+		
+		return ResponseEntity.status(HttpStatus.OK).body(res);
+	}
+	
+	
 }

@@ -21,4 +21,6 @@ public interface CourseRepository extends JpaRepository<CoursesEntity, UUID> {
 	int setCanEnroll(@Param("courseId") UUID courseId, 
 			@Param("canEnroll") boolean canEnroll, 
 			@Param("instructorId") UUID instructorId);
+	
+	
 }

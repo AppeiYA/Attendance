@@ -19,6 +19,9 @@ public class EnrolledEntity {
 	@JoinColumn(name="course_id", nullable=false)
 	private CoursesEntity course;
 
+	public EnrolledEntity() {
+	}
+
 	public EnrolledEntity(UsersEntity student, CoursesEntity course) {
 		this.student = student;
 		this.course = course;
