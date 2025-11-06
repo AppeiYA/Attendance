@@ -135,4 +135,23 @@ public class UserService {
 			throw new UnauthorizedUserException("Enrollment is closed");
 		}
 	}
+	
+	public void deleteCourse(UUID course_id) {
+		VerifiedUserDto tokenUser = (VerifiedUserDto) SecurityContextHolder
+				.getContext()
+				.getAuthentication()
+				.getPrincipal();
+		if(!tokenUser.role().name().equals("instructor")) {
+			throw new UnauthorizedUserException("User not permitted");
+		}
+		
+		CoursesEntity course = courseRepository.findById(course_id)
+		        .orElseThrow(() -> new IllegalStateException("Course does not exist"));
+
+		    if (!course.getInstructor().getId().equals(tokenUser.user_id())) {
+		        throw new UnauthorizedUserException("You can't delete another instructor’s course");
+		    }
+		
+		    courseRepository.delete(course);
+	}
 }

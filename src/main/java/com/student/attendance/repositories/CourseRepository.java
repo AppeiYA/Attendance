@@ -22,5 +22,13 @@ public interface CourseRepository extends JpaRepository<CoursesEntity, UUID> {
 			@Param("canEnroll") boolean canEnroll, 
 			@Param("instructorId") UUID instructorId);
 	
+	@Transactional
+	@Modifying 
+	@Query(
+			value = "DELETE FROM courses c WHERE c.id = :courseId AND c.instructor_id = :instructorId",
+			nativeQuery = true
+			)
+	int deleteCourseByInstructor(@Param("instructorId") UUID instructorId, @Param("courseId") UUID courseId);
+	
 	
 }

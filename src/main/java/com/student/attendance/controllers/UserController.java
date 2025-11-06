@@ -7,6 +7,7 @@ import java.util.UUID;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 //import java.util.HashMap;
 //import java.util.Map;
 //
@@ -20,6 +21,8 @@ import com.student.attendance.dtos.UserDto;
 import com.student.attendance.services.UserService;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.Pattern;
 //
 //import com.student.attendance.dtos.UserLoginDto;
 //import com.student.attendance.dtos.UserRegisterDto;
@@ -28,6 +31,8 @@ import jakarta.validation.Valid;
 //import jakarta.validation.Valid;
 
 @RestController
+@RequestMapping("/api/users")
+@Validated
 public class UserController {
 	private final UserService userService;
 
@@ -35,7 +40,7 @@ public class UserController {
 		this.userService = userService;
 	}
 	
-	@GetMapping("/api/users/me")
+	@GetMapping("/profile/me")
 	public ResponseEntity<Map<String, Object>> getUser() {
 		UserDto response = this.userService.GetUser();
 		
@@ -46,8 +51,12 @@ public class UserController {
 		return ResponseEntity.status(HttpStatus.OK).body(res);
 	}
 	
-	@GetMapping("/api/users/{email}")
-	public ResponseEntity<Map<String, Object>> getUser(@PathVariable String email){
+	@GetMapping("/{email}")
+	public ResponseEntity<Map<String, Object>> getUserByEmail(
+			@Valid
+			@Email(message = "Invalid email format")
+			@PathVariable String email
+			){
 		UserDto response = this.userService.getUserByEmail(email);
 		
 		Map<String, Object> res = new HashMap<>();
@@ -57,7 +66,7 @@ public class UserController {
 		return ResponseEntity.status(HttpStatus.OK).body(res);
 	}
 	
-	@PostMapping("/api/users/courses")
+	@PostMapping("/courses")
 	public ResponseEntity<Map<String, Object>> createCourse(@Valid @RequestBody CreateCourseDto payload){
 		this.userService.createCourse(payload);
 		
@@ -68,7 +77,7 @@ public class UserController {
 		return ResponseEntity.status(HttpStatus.CREATED).body(res);
 	}
 	
-	@PatchMapping("/api/users/courses/{courseId}/enroll/{canEnroll}")
+	@PatchMapping("/courses/{courseId}/enroll/{canEnroll}")
 	public ResponseEntity<Map<String, Object>> setCourseEnroll(
 			@PathVariable UUID courseId,
 	        @PathVariable boolean canEnroll){
@@ -82,7 +91,7 @@ public class UserController {
 		return ResponseEntity.status(HttpStatus.OK).body(res);
 	}
 	
-	@GetMapping("/api/users/courses")
+	@GetMapping("/courses")
 	public ResponseEntity<Map<String, Object>> getCourses(){
 		List<CourseDto> courses = this.userService.getCourses();
 		
@@ -93,7 +102,7 @@ public class UserController {
 		return ResponseEntity.status(HttpStatus.OK).body(res);
 	}
 	
-	@GetMapping("/api/users/courses/{courseId}")
+	@GetMapping("/courses/{courseId}")
 	public ResponseEntity<Map<String, Object>> getCourseById(@PathVariable UUID courseId){
 		CourseDto course = this.userService.getCourseById(courseId);
 		
@@ -104,7 +113,7 @@ public class UserController {
 		return ResponseEntity.status(HttpStatus.OK).body(res);
 	}
 	
-	@PostMapping("/api/users/courses/{courseId}/enroll")
+	@PostMapping("/courses/{courseId}/enroll")
 	public ResponseEntity<Map<String, Object>> enrollForCourse(@PathVariable UUID courseId){
 		this.userService.enrollForCourse(courseId);
 		
@@ -115,5 +124,16 @@ public class UserController {
 		return ResponseEntity.status(HttpStatus.OK).body(res);
 	}
 	
+	@DeleteMapping("/courses/{courseId}")
+	public ResponseEntity<Map<String, Object>> deleteCourse(@PathVariable UUID courseId){
+		this.userService.deleteCourse(courseId);
+		
+		Map<String, Object> res = new HashMap<>();
+		res.put("message", "Success");
+		res.put("StatusCode", HttpStatus.OK);
+		
+		return ResponseEntity.status(HttpStatus.OK).body(res);
+		
+	}
 	
 }

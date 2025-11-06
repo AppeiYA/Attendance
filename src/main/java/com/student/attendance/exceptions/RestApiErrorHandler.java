@@ -2,21 +2,26 @@ package com.student.attendance.exceptions;
 
 import java.util.Locale;
 import java.util.stream.Collectors;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 
-import org.hibernate.exception.ConstraintViolationException;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.MessageSource;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.handler.annotation.support.MethodArgumentTypeMismatchException;
+import org.springframework.validation.BindException;
 import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.ConstraintViolationException;
 
 @ControllerAdvice
 public class RestApiErrorHandler {
@@ -28,15 +33,37 @@ public class RestApiErrorHandler {
 		this.messageSource = messageSource;
 	}
 	
+	@ExceptionHandler(ExpiredJwtException.class)
+	public ResponseEntity<Error> handleExpiredJwtException(HttpServletRequest request, ExpiredJwtException ex,
+			Locale locale){
+		Error error = ErrorUtils.createError(ex.getMessage(), ErrorCode.UNAUTHORIZED_USER.getErrCode(), HttpStatus.FORBIDDEN.value())
+				.setUrl(request.getRequestURL().toString())
+				.setReqMethod(request.getMethod());
+		log.error("ExpiredJwtException at {} {}: {} ", request.getMethod(), request.getRequestURL(), ex.getMessage());
+		
+		return new ResponseEntity<>(error, HttpStatus.FORBIDDEN);
+	}
+	
+	@ExceptionHandler(HttpMessageNotReadableException.class)
+	public ResponseEntity<Error> handleHttpMessageNotReadableException(HttpServletRequest request, HttpMessageNotReadableException ex,
+			Locale locale){
+		Error error = ErrorUtils.createError(ex.getMessage().substring(0, 32), ErrorCode.ILLEGAL_STATE.getErrCode(), HttpStatus.EXPECTATION_FAILED.value())
+				.setUrl(request.getRequestURL().toString())
+				.setReqMethod(request.getMethod());
+		log.error("HttpMessageNotReadableException at {} {}: {} ", request.getMethod(), request.getRequestURL(), ex.getMessage());
+		
+		return new ResponseEntity<>(error, HttpStatus.EXPECTATION_FAILED);
+	}
+	
 	@ExceptionHandler(IllegalStateException.class)
 	public ResponseEntity<Error> handleIllegalStateException(HttpServletRequest request, IllegalStateException ex,
 			Locale locale){
-		Error error = ErrorUtils.createError(ex.getMessage(), ErrorCode.ILLEGAL_STATE.getErrCode(), HttpStatus.EXPECTATION_FAILED.value())
+		Error error = ErrorUtils.createError(ex.getMessage(), ErrorCode.AUTHENTICATION_ERROR.getErrCode(), HttpStatus.BAD_REQUEST.value())
 				.setUrl(request.getRequestURL().toString())
 				.setReqMethod(request.getMethod());
 		log.error("IllegalStateException at {} {}: {} ", request.getMethod(), request.getRequestURL(), ex.getMessage());
 		
-		return new ResponseEntity<>(error, HttpStatus.EXPECTATION_FAILED);
+		return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
 	}
 	
 	@ExceptionHandler(NotFoundError.class)
@@ -109,13 +136,50 @@ public class RestApiErrorHandler {
 		return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
 	}
 	
+	@ExceptionHandler(MethodArgumentTypeMismatchException.class)
+	public ResponseEntity<Error> handleMethodArgumentTypeMismatchException(HttpServletRequest request, MethodArgumentTypeMismatchException ex, 
+			Locale locale){
+		Error error = ErrorUtils.createError(ex.getMessage(), ErrorCode.INVALID_INPUT_ERROR.getErrCode(), HttpStatus.BAD_REQUEST.value())
+				.setUrl(request.getRequestURL().toString())
+				.setReqMethod(request.getMethod());
+		log.error("MethodArgumentTypeMismatchException at {} {} : {}", request.getMethod(), request.getRequestURL(), ex.getMessage());
+		
+		return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+	}
+	
+	@ExceptionHandler(BindException.class)
+	public ResponseEntity<Error> handleBindException(HttpServletRequest request, BindException ex, 
+			Locale locale){
+		Error error = ErrorUtils.createError(ex.getMessage(), ErrorCode.INVALID_INPUT_ERROR.getErrCode(), HttpStatus.BAD_REQUEST.value())
+				.setUrl(request.getRequestURL().toString())
+				.setReqMethod(request.getMethod());
+		log.error("BindException at {} {} : {}", request.getMethod(), request.getRequestURL(), ex.getMessage());
+		
+		return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+	}
+	
+	@ExceptionHandler(ConstraintViolationException.class)
+	public ResponseEntity<Error> handleConstraintViolationException(HttpServletRequest request, ConstraintViolationException ex, 
+			Locale locale){
+		 String message = ex.getConstraintViolations()
+			        .stream()
+			        .map(violation -> violation.getMessage()) // 👈 only message
+			        .findFirst()
+			        .orElse("Validation error");
+		Error error = ErrorUtils.createError(message, ErrorCode.INVALID_INPUT_ERROR.getErrCode(), HttpStatus.BAD_REQUEST.value())
+				.setUrl(request.getRequestURL().toString())
+				.setReqMethod(request.getMethod());
+		log.error("ConstraintViolationException at {} {} : {}", request.getMethod(), request.getRequestURL(), ex.getMessage());
+		
+		return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+	}
 	@ExceptionHandler(Exception.class)
 	public ResponseEntity<Error> handleException(HttpServletRequest request, Exception ex, Locale locale){
 		Error error = ErrorUtils.createError(ErrorCode.GENERIC_ERROR.getErrMsgKey(), ErrorCode.GENERIC_ERROR.getErrCode(), 
 				HttpStatus.INTERNAL_SERVER_ERROR.value())
 				.setUrl(request.getRequestURL().toString())
 				.setReqMethod(request.getMethod());
-		log.error("Exception at {} {} : {}", request.getMethod(), request.getRequestURL(), ex.getMessage());
+		log.error("Exception at {} {} : {} {}", request.getMethod(), request.getRequestURL(), ex.getMessage(), ex.getClass());
 		
 		return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
 	}

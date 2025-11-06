@@ -16,7 +16,7 @@ public class CoursesEntity {
 	@JoinColumn(name="instructor_id")
 	private UsersEntity instructor;
 	
-	@OneToMany(mappedBy = "course", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@OneToMany(mappedBy = "course", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
 	private List<EnrolledEntity> enrollments;
 	
 	@Column(nullable=false, length=255)
